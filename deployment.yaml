@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: svc-master
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: pythonapp-deployment
+  namespace: svc-master
+  labels:
+    app: pythonapp
+spec:
+  selector:
+    matchLabels:
+      app: pythonapp
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: pythonapp
+    spec:
+      containers:
+      - name: pythonapp
+        image: contenedoresre.azurecr.io/pythonapp:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Service
+metadata:
+  name: pythonapp
+  namespace: svc-master
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: pythonapp
